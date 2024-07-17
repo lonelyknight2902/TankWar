@@ -48,16 +48,16 @@ class Player extends Phaser.GameObjects.Image {
         this.engineSound2 = this.scene.sound.add('engine2', { volume: 0.5 })
         this.engineSound3 = this.scene.sound.add('engine3', { volume: 0.5 })
         this.damageSpeeches = [
-            this.scene.sound.add('damage1', { volume: 2 }),
-            this.scene.sound.add('damage2', { volume: 2 }),
-            this.scene.sound.add('damage3', { volume: 2 }),
-            this.scene.sound.add('damage4', { volume: 2 }),
+            this.scene.sound.add('damage1', { volume: 3 }),
+            this.scene.sound.add('damage2', { volume: 3 }),
+            this.scene.sound.add('damage3', { volume: 3 }),
+            this.scene.sound.add('damage4', { volume: 3 }),
         ]
         this.killSpeeches = [
-            this.scene.sound.add('kill1', { volume: 2 }),
-            this.scene.sound.add('kill2', { volume: 2 }),
-            this.scene.sound.add('kill3', { volume: 2 }),
-            this.scene.sound.add('kill4', { volume: 2 }),
+            this.scene.sound.add('kill1', { volume: 3 }),
+            this.scene.sound.add('kill2', { volume: 3 }),
+            this.scene.sound.add('kill3', { volume: 3 }),
+            this.scene.sound.add('kill4', { volume: 3 }),
         ]
         this.scene.add.existing(this)
     }
@@ -172,9 +172,9 @@ class Player extends Phaser.GameObjects.Image {
             //     this.body.acceleration
             // )
             this.body.acceleration.setToPolar(this.rotation - Math.PI / 2, this.speed)
-            console.log(((this.rotation - Math.PI / 2) * 180) / Math.PI)
-            console.log(this.body.acceleration)
-            console.log('Speed: ', this.body.velocity)
+            // console.log(((this.rotation - Math.PI / 2) * 180) / Math.PI)
+            // console.log(this.body.acceleration)
+            // console.log('Speed: ', this.body.velocity)
             if (this.body.speed < 3) {
                 this.state = 'forward'
             }
@@ -194,9 +194,9 @@ class Player extends Phaser.GameObjects.Image {
             }
         } else if (this.backwardKey.isDown) {
             this.body.acceleration.setToPolar(this.rotation + Math.PI / 2, this.speed)
-            console.log(((this.rotation + Math.PI / 2) * 180) / Math.PI)
-            console.log(this.body.acceleration)
-            console.log('Speed: ', this.body.velocity)
+            // console.log(((this.rotation + Math.PI / 2) * 180) / Math.PI)
+            // console.log(this.body.acceleration)
+            // console.log('Speed: ', this.body.velocity)
             if (this.body.speed < 3) {
                 this.state = 'backward'
             }

@@ -266,6 +266,26 @@
         "type": "audio",
         "key": "kill4",
         "url": "./assets/audios/Speech/Kill/ge_bomb_success_v3_r4_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "music1",
+        "url": "./assets/audios/Music/Erica.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "music2",
+        "url": "./assets/audios/Music/MainTheme.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "music3",
+        "url": "./assets/audios/Music/Rebirth.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "music4",
+        "url": "./assets/audios/Music/Dogfight.mp3"
       }
     ]
   }

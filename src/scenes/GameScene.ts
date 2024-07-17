@@ -21,6 +21,7 @@ class GameScene extends Phaser.Scene {
     private stateMachine: StateMachine
     private ambientSound: Phaser.Sound.BaseSound
     private warAmbientSound: Phaser.Sound.BaseSound
+    private musics: Phaser.Sound.BaseSound[]
     constructor() {
         super({
             key: 'GameScene',
@@ -113,6 +114,9 @@ class GameScene extends Phaser.Scene {
         this.warAmbientSound = this.sound.add('warAmbient')
         this.ambientSound.play({ loop: true, volume: 0.2 })
         this.warAmbientSound.play({ loop: true, volume: 0.2 })
+        this.musics = [this.sound.add('music3'), this.sound.add('music4')]
+        this.sound.stopAll()
+        this.musics[1].play({ loop: true, volume: 0.8 })
         this.cameras.main.startFollow(this.player)
         this.gameUI = new GameUI({ x: 0, y: 0, scene: this })
         this.pauseUI = new PauseUI({ x: 0, y: 0, scene: this })
@@ -173,6 +177,7 @@ class GameScene extends Phaser.Scene {
 
     private enemyBulletHitPlayer(bullet: any, player: any): void {
         bullet.body.setVelocity(0)
+        this.cameras.main.shake(100, 0.01)
         this.physics.world.remove(bullet.body)
         console.log('hit')
         bullet.explode(() => {
@@ -189,6 +194,44 @@ class GameScene extends Phaser.Scene {
                 enemy.updateHealth()
                 if (!enemy.active) {
                     this.player.killEnemy()
+                    const enemyKiledText = this.add.text(
+                        this.player.x,
+                        this.player.y,
+                        'Enemy killed',
+                        {
+                            fontSize: '48px',
+                            color: 'white',
+                            fontStyle: 'bold',
+                            fontFamily: 'Helvetica',
+                        }
+                    )
+                    enemyKiledText.setOrigin(0.5)
+                    this.tweens.add({
+                        targets: enemyKiledText,
+                        y: enemyKiledText.y - 50,
+                        alpha: 0,
+                        duration: 1000,
+                        onComplete: () => {
+                            enemyKiledText.destroy()
+                        },
+                    })
+                } else {
+                    const enemyHitText = this.add.text(this.player.x, this.player.y, 'Enemy Hit', {
+                        fontSize: '24px',
+                        color: 'white',
+                        fontStyle: 'bold',
+                        fontFamily: 'Helvetica',
+                    })
+                    enemyHitText.setOrigin(0.5)
+                    this.tweens.add({
+                        targets: enemyHitText,
+                        y: enemyHitText.y - 50,
+                        alpha: 0,
+                        duration: 1000,
+                        onComplete: () => {
+                            enemyHitText.destroy()
+                        },
+                    })
                 }
                 const hitPointText = this.add.text(enemy.x, enemy.y, `-${DAMAGE}`, {
                     fontSize: '48px',
