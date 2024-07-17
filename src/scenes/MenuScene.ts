@@ -1,3 +1,5 @@
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants'
+
 class MenuScene extends Phaser.Scene {
     private startKey: Phaser.Input.Keyboard.Key
     private bitmapTexts: Phaser.GameObjects.BitmapText[] = []
@@ -16,6 +18,9 @@ class MenuScene extends Phaser.Scene {
     }
 
     create(): void {
+        const background = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 'wallpaper')
+        background.setOrigin(0.5)
+        background.height = SCREEN_HEIGHT
         this.bitmapTexts.push(
             this.add.bitmapText(
                 this.sys.canvas.width / 2 - 120,
@@ -39,7 +44,10 @@ class MenuScene extends Phaser.Scene {
 
     update(): void {
         if (this.startKey.isDown) {
-            this.scene.start('GameScene')
+            this.cameras.main.fadeOut(500)
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start('GameScene')
+            })
         }
     }
 }

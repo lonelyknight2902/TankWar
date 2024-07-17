@@ -1,4 +1,4 @@
-import { ROTATION_SPEED_DEGREES, SPEED, TOLERANCE } from '../constants'
+import { RELOAD_TIME, ROTATION_SPEED_DEGREES, SPEED, TOLERANCE } from '../constants'
 import { IImageConstructor } from '../interfaces/image.interface'
 import Bullet from './Bullet'
 
@@ -16,6 +16,8 @@ class Player extends Phaser.GameObjects.Image {
 
     // game objects
     private bullets: Phaser.GameObjects.Group
+    private fireSound: Phaser.Sound.BaseSound
+    private turretTurn: Phaser.Sound.BaseSound
 
     // input
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys
@@ -24,6 +26,12 @@ class Player extends Phaser.GameObjects.Image {
     private forwardKey: Phaser.Input.Keyboard.Key
     private backwardKey: Phaser.Input.Keyboard.Key
     private shootingKey: Phaser.Input.Keyboard.Key
+    private engineSound0: Phaser.Sound.BaseSound
+    private engineSound1: Phaser.Sound.BaseSound
+    private engineSound2: Phaser.Sound.BaseSound
+    private engineSound3: Phaser.Sound.BaseSound
+    private damageSpeeches: Phaser.Sound.BaseSound[]
+    private killSpeeches: Phaser.Sound.BaseSound[]
 
     public getBullets(): Phaser.GameObjects.Group {
         return this.bullets
@@ -33,6 +41,24 @@ class Player extends Phaser.GameObjects.Image {
         super(aParams.scene, aParams.x, aParams.y, aParams.texture, aParams.frame)
 
         this.initImage()
+        this.fireSound = this.scene.sound.add('cannonFire')
+        this.turretTurn = this.scene.sound.add('turretTurn', { volume: 0.3 })
+        this.engineSound0 = this.scene.sound.add('engine0', { volume: 0.5 })
+        this.engineSound1 = this.scene.sound.add('engine1', { volume: 0.5 })
+        this.engineSound2 = this.scene.sound.add('engine2', { volume: 0.5 })
+        this.engineSound3 = this.scene.sound.add('engine3', { volume: 0.5 })
+        this.damageSpeeches = [
+            this.scene.sound.add('damage1', { volume: 2 }),
+            this.scene.sound.add('damage2', { volume: 2 }),
+            this.scene.sound.add('damage3', { volume: 2 }),
+            this.scene.sound.add('damage4', { volume: 2 }),
+        ]
+        this.killSpeeches = [
+            this.scene.sound.add('kill1', { volume: 2 }),
+            this.scene.sound.add('kill2', { volume: 2 }),
+            this.scene.sound.add('kill3', { volume: 2 }),
+            this.scene.sound.add('kill4', { volume: 2 }),
+        ]
         this.scene.add.existing(this)
     }
 
@@ -52,8 +78,8 @@ class Player extends Phaser.GameObjects.Image {
         this.barrel.setDepth(1)
         this.barrel.angle = 180
 
-        this.setScale(1.5)
-        this.barrel.setScale(1.5)
+        this.setScale(2)
+        this.barrel.setScale(2)
 
         this.lifeBar = this.scene.add.graphics()
         this.redrawLifebar()
@@ -84,6 +110,7 @@ class Player extends Phaser.GameObjects.Image {
         body.setDamping(true)
         // body.setDrag(1)
         body.setMaxSpeed(this.speed)
+        this.state = 'idle'
     }
 
     update(): void {
@@ -94,6 +121,27 @@ class Player extends Phaser.GameObjects.Image {
             this.lifeBar.y = this.y
             this.handleInput()
             this.handleShooting()
+            if (this.body.speed == 0) {
+                if (!this.engineSound0.isPlaying) this.engineSound0.play()
+                if (this.engineSound1.isPlaying) this.engineSound1.stop()
+                if (this.engineSound2.isPlaying) this.engineSound2.stop()
+                if (this.engineSound3.isPlaying) this.engineSound3.stop()
+            } else if (this.body.speed < SPEED / 3) {
+                if (this.engineSound0.isPlaying) this.engineSound0.stop()
+                if (!this.engineSound1.isPlaying) this.engineSound1.play()
+                if (this.engineSound2.isPlaying) this.engineSound2.stop()
+                if (this.engineSound3.isPlaying) this.engineSound3.stop()
+            } else if (this.body.speed < (SPEED * 2) / 3) {
+                if (this.engineSound0.isPlaying) this.engineSound0.stop()
+                if (this.engineSound1.isPlaying) this.engineSound1.stop()
+                if (!this.engineSound2.isPlaying) this.engineSound2.play()
+                if (this.engineSound3.isPlaying) this.engineSound3.stop()
+            } else {
+                if (this.engineSound0.isPlaying) this.engineSound0.stop()
+                if (this.engineSound1.isPlaying) this.engineSound1.stop()
+                if (this.engineSound2.isPlaying) this.engineSound2.stop()
+                if (!this.engineSound3.isPlaying) this.engineSound3.play()
+            }
         } else {
             this.destroy()
             this.barrel.destroy()
@@ -124,28 +172,63 @@ class Player extends Phaser.GameObjects.Image {
             //     this.body.acceleration
             // )
             this.body.acceleration.setToPolar(this.rotation - Math.PI / 2, this.speed)
+            console.log(((this.rotation - Math.PI / 2) * 180) / Math.PI)
+            console.log(this.body.acceleration)
+            console.log('Speed: ', this.body.velocity)
+            if (this.body.speed < 3) {
+                this.state = 'forward'
+            }
+            if (this.state === 'forward') {
+                this.scene.physics.velocityFromRotation(
+                    this.rotation - Math.PI / 2,
+                    this.body.speed,
+                    this.body.velocity
+                )
+            } else {
+                this.body.setDrag(0.2)
+                this.scene.physics.velocityFromRotation(
+                    this.rotation + Math.PI / 2,
+                    this.body.speed,
+                    this.body.velocity
+                )
+            }
         } else if (this.backwardKey.isDown) {
-            // this.scene.physics.velocityFromRotation(
-            //     this.rotation - Math.PI / 2,
-            //     -this.speed,
-            //     this.body.acceleration
-            // )
-            // this.body.acceleration.setToPolar(this.rotation - Math.PI / 2, this.speed)
-            this.body.setDrag(0.2)
+            this.body.acceleration.setToPolar(this.rotation + Math.PI / 2, this.speed)
+            console.log(((this.rotation + Math.PI / 2) * 180) / Math.PI)
+            console.log(this.body.acceleration)
+            console.log('Speed: ', this.body.velocity)
+            if (this.body.speed < 3) {
+                this.state = 'backward'
+            }
+            if (this.state === 'backward') {
+                this.scene.physics.velocityFromRotation(
+                    this.rotation + Math.PI / 2,
+                    this.body.speed,
+                    this.body.velocity
+                )
+            } else {
+                this.body.setDrag(0.2)
+                this.scene.physics.velocityFromRotation(
+                    this.rotation - Math.PI / 2,
+                    this.body.speed,
+                    this.body.velocity
+                )
+            }
         } else {
             this.body.setDrag(0.3)
             // this.body.setVelocity(0, 0)
             // this.body.setAcceleration(0, 0)
         }
 
-        this.scene.physics.velocityFromRotation(
-            this.rotation - Math.PI / 2,
-            this.body.speed,
-            this.body.velocity
-        )
+        // this.scene.physics.velocityFromRotation(
+        //     this.rotation - Math.PI / 2,
+        //     this.body.speed,
+        //     this.body.velocity
+        // )
 
         if (!this.forwardKey.isDown && !this.backwardKey.isDown && this.body.speed < 3) {
             this.body.setVelocity(0)
+            this.state = 'idle'
         }
 
         // rotate barrel
@@ -171,7 +254,7 @@ class Player extends Phaser.GameObjects.Image {
                 pointer.worldY
             ) +
             Math.PI / 2
-        console.log(pointer.x, pointer.y)
+        // console.log(pointer.x, pointer.y)
         // this.barrel.rotation = angleToPointer
         const angleDelta = Phaser.Math.Angle.Wrap(angleToPointer - this.barrel.rotation)
         // console.log(
@@ -186,16 +269,21 @@ class Player extends Phaser.GameObjects.Image {
             this.barrel.rotation = angleToPointer
             const body = this.barrel.body as Phaser.Physics.Arcade.Body
             body.setAngularVelocity(0)
+            this.turretTurn.stop()
         } else {
             const body = this.barrel.body as Phaser.Physics.Arcade.Body
             body.setAngularVelocity(Math.sign(angleDelta) * ROTATION_SPEED_DEGREES)
+            if (!this.turretTurn.isPlaying) {
+                this.turretTurn.play({ loop: true })
+            }
             // this.barrel.rotation += Math.sign(angleDelta) * ROTATION_SPEED
         }
     }
 
     private handleShooting(): void {
         if (this.scene.input.activePointer.isDown && this.scene.time.now > this.lastShoot) {
-            // this.scene.cameras.main.shake(20, 0.005)
+            this.scene.cameras.main.shake(20, 0.005)
+            this.fireSound.play()
             this.scene.tweens.add({
                 targets: this,
                 props: { alpha: 0.8 },
@@ -211,17 +299,18 @@ class Player extends Phaser.GameObjects.Image {
             })
 
             if (this.bullets.getLength() < 10) {
-                this.bullets.add(
-                    new Bullet({
-                        scene: this.scene,
-                        rotation: this.barrel.rotation,
-                        x: this.barrel.x,
-                        y: this.barrel.y,
-                        texture: 'bulletBlue',
-                    })
-                )
+                const bullet = new Bullet({
+                    scene: this.scene,
+                    rotation: this.barrel.rotation,
+                    x: this.barrel.x,
+                    y: this.barrel.y,
+                    texture: 'bulletBlue',
+                })
 
-                this.lastShoot = this.scene.time.now + 80
+                bullet.setScale(2)
+                this.bullets.add(bullet)
+
+                this.lastShoot = this.scene.time.now + RELOAD_TIME
             }
         }
     }
@@ -236,14 +325,19 @@ class Player extends Phaser.GameObjects.Image {
     }
 
     public updateHealth(): void {
-        if (this.health > 0) {
-            this.health -= 0.05
-            this.redrawLifebar()
-        } else {
-            this.health = 0
-            this.active = false
-            this.scene.scene.start('MenuScene')
-        }
+        this.damageSpeeches[Phaser.Math.RND.between(0, 3)].play()
+        // if (this.health > 0) {
+        //     this.health -= 0.05
+        //     this.redrawLifebar()
+        // } else {
+        //     this.health = 0
+        //     this.active = false
+        //     this.scene.scene.start('MenuScene')
+        // }
+    }
+
+    public killEnemy(): void {
+        this.killSpeeches[Phaser.Math.RND.between(0, 3)].play()
     }
 }
 

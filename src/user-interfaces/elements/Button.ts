@@ -130,6 +130,10 @@ class Button extends Phaser.GameObjects.Container {
         this.setScrollFactor(0)
         this.scene.add.existing(this)
     }
+
+    public getIcon(): Phaser.GameObjects.Image {
+        return this.icon
+    }
 }
 
 export default Button

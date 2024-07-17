@@ -1,3 +1,4 @@
+import { DAMAGE, RELOAD_TIME } from '../constants'
 import { IImageConstructor } from '../interfaces/image.interface'
 import Bullet from './Bullet'
 
@@ -6,8 +7,10 @@ class Enemy extends Phaser.GameObjects.Image {
 
     // variables
     private health: number
+    private maxHealth: number
     private lastShoot: number
     private speed: number
+    private explodeSound: Phaser.Sound.BaseSound
 
     // children
     private barrel: Phaser.GameObjects.Image
@@ -28,12 +31,14 @@ class Enemy extends Phaser.GameObjects.Image {
         super(aParams.scene, aParams.x, aParams.y, aParams.texture, aParams.frame)
 
         this.initContainer()
+        this.explodeSound = this.scene.sound.add('explosion')
         this.scene.add.existing(this)
     }
 
     private initContainer() {
         // variables
-        this.health = 1
+        this.health = 100
+        this.maxHealth = 100
         this.lastShoot = 0
         this.speed = 100
 
@@ -100,7 +105,7 @@ class Enemy extends Phaser.GameObjects.Image {
                     })
                 )
 
-                this.lastShoot = this.scene.time.now + 400
+                this.lastShoot = this.scene.time.now + RELOAD_TIME
             }
         }
     }
@@ -108,7 +113,12 @@ class Enemy extends Phaser.GameObjects.Image {
     private redrawLifebar(): void {
         this.lifeBar.clear()
         this.lifeBar.fillStyle(0xe66a28, 1)
-        this.lifeBar.fillRect(-this.width / 2, this.height / 2, this.width * this.health, 15)
+        this.lifeBar.fillRect(
+            -this.width / 2,
+            this.height / 2,
+            (this.width * this.health) / this.maxHealth,
+            15
+        )
         this.lifeBar.lineStyle(2, 0xffffff)
         this.lifeBar.strokeRect(-this.width / 2, this.height / 2, this.width, 15)
         this.lifeBar.setDepth(1)
@@ -116,11 +126,12 @@ class Enemy extends Phaser.GameObjects.Image {
 
     public updateHealth(): void {
         if (this.health > 0) {
-            this.health -= 0.05
+            this.health -= DAMAGE
             this.redrawLifebar()
         } else {
             this.health = 0
             this.active = false
+            this.explodeSound.play()
         }
     }
 }

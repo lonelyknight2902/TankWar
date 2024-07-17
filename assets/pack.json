@@ -151,6 +151,121 @@
         "type": "image",
         "key": "return",
         "url": "./assets/user-interfaces/icons/return.png"
+      },
+      {
+        "type": "image",
+        "key": "audioOn",
+        "url": "./assets/user-interfaces/icons/audioOn.png"
+      },
+      {
+        "type": "image",
+        "key": "audioOff",
+        "url": "./assets/user-interfaces/icons/audioOff.png"
+      },
+      {
+        "type": "image",
+        "key": "wallpaper",
+        "url": "./assets/images/tank.jpg"
+      },
+      {
+        "type": "audio",
+        "key": "ambient",
+        "url": "./assets/audios/Ambient/amb_forest.wav"
+      },
+      {
+        "type": "audio",
+        "key": "warAmbient",
+        "url": "./assets/audios/Ambient/warfare_amb_tanks_med.wav"
+      },
+      {
+        "type": "audio",
+        "key": "cannonFire",
+        "url": "./assets/audios/Cannon/cannon_75mm_m3_shot_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "bigHit",
+        "url": "./assets/audios/Hit/tank_hit_big_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "mediumHit",
+        "url": "./assets/audios/Hit/tank_hit_med_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "smallHit",
+        "url": "./assets/audios/Hit/tank_hit_small_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "turretTurn",
+        "url": "./assets/audios/Turret/turret_turn_loop_1.wav"
+      },
+      {
+        "type": "audio",
+        "key": "engine0",
+        "url": "./assets/audios/Engine/sherman_m4a1_engine_rpm_00.wav"
+      },
+      {
+        "type": "audio",
+        "key": "engine1",
+        "url": "./assets/audios/Engine/sherman_m4a1_engine_rpm_33.wav"
+      },
+      {
+        "type": "audio",
+        "key": "engine2",
+        "url": "./assets/audios/Engine/sherman_m4a1_engine_rpm_66_load.wav"
+      },
+      {
+        "type": "audio",
+        "key": "engine3",
+        "url": "./assets/audios/Engine/sherman_m4a1_engine_rpm_99.wav"
+      },
+      {
+        "type": "audio",
+        "key": "explosion",
+        "url": "./assets/audios/Explosion/tank_destroyed_03.wav"
+      },
+      {
+        "type": "audio",
+        "key": "damage1",
+        "url": "./assets/audios/Speech/Damage/ge_tank_damaged_v2_r1_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "damage2",
+        "url": "./assets/audios/Speech/Damage/ge_tank_damaged_v2_r2_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "damage3",
+        "url": "./assets/audios/Speech/Damage/ge_tank_damaged_v2_r3_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "damage4",
+        "url": "./assets/audios/Speech/Damage/ge_tank_damaged_v2_r4_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "kill1",
+        "url": "./assets/audios/Speech/Kill/ge_bomb_success_v3_r1_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "kill2",
+        "url": "./assets/audios/Speech/Kill/ge_bomb_success_v3_r2_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "kill3",
+        "url": "./assets/audios/Speech/Kill/ge_bomb_success_v3_r3_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "kill4",
+        "url": "./assets/audios/Speech/Kill/ge_bomb_success_v3_r4_t1_mood_high.wav"
       }
     ]
   }

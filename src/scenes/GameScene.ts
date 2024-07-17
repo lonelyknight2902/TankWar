@@ -1,3 +1,4 @@
+import { DAMAGE } from '../constants'
 import { Bullet, Enemy, Player } from '../objects'
 import { Obstacle } from '../objects/obstacles/obstacle'
 import { PauseState, PlayState } from '../states/game-states'
@@ -18,6 +19,8 @@ class GameScene extends Phaser.Scene {
     private gameUI: GameUI
     private pauseUI: PauseUI
     private stateMachine: StateMachine
+    private ambientSound: Phaser.Sound.BaseSound
+    private warAmbientSound: Phaser.Sound.BaseSound
     constructor() {
         super({
             key: 'GameScene',
@@ -106,6 +109,10 @@ class GameScene extends Phaser.Scene {
             pause: new PauseState(this),
         })
 
+        this.ambientSound = this.sound.add('ambient')
+        this.warAmbientSound = this.sound.add('warAmbient')
+        this.ambientSound.play({ loop: true, volume: 0.2 })
+        this.warAmbientSound.play({ loop: true, volume: 0.2 })
         this.cameras.main.startFollow(this.player)
         this.gameUI = new GameUI({ x: 0, y: 0, scene: this })
         this.pauseUI = new PauseUI({ x: 0, y: 0, scene: this })
@@ -170,15 +177,38 @@ class GameScene extends Phaser.Scene {
         console.log('hit')
         bullet.explode(() => {
             player.updateHealth()
-        })
+        }, 'medium')
     }
 
     private playerBulletHitEnemy(bullet: any, enemy: any): void {
         bullet.body.setVelocity(0)
         this.physics.world.remove(bullet.body)
-        bullet.explode(() => {
-            enemy.updateHealth()
-        })
+        const distance = Phaser.Math.Distance.Between(bullet.x, bullet.y, enemy.x, enemy.y) / 1000
+        bullet.explode(
+            () => {
+                enemy.updateHealth()
+                if (!enemy.active) {
+                    this.player.killEnemy()
+                }
+                const hitPointText = this.add.text(enemy.x, enemy.y, `-${DAMAGE}`, {
+                    fontSize: '48px',
+                    color: 'red',
+                    fontStyle: 'bold',
+                    fontFamily: 'Helvetica',
+                })
+                this.tweens.add({
+                    targets: hitPointText,
+                    y: hitPointText.y - 50,
+                    alpha: 0,
+                    duration: 500,
+                    onComplete: () => {
+                        hitPointText.destroy()
+                    },
+                })
+            },
+            'small',
+            distance
+        )
     }
 
     public getPlayer(): Player {
