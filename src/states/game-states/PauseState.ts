@@ -10,6 +10,8 @@ class PauseState extends State {
     public enter(): void {
         console.log('Paused')
         this.scene.physics.pause()
+        // this.scene.sys.pause()
+        this.scene.tweens.pauseAll()
         const pauseUI = this.scene.getPauseUI()
         pauseUI.setVisible(true)
         pauseUI.setActive(true)
@@ -22,6 +24,7 @@ class PauseState extends State {
     public exit(): void {
         console.log('Unpaused')
         this.scene.physics.resume()
+        this.scene.tweens.resumeAll()
         const pauseUI = this.scene.getPauseUI()
         pauseUI.setVisible(false)
         pauseUI.setActive(false)

@@ -111,24 +111,12 @@ class GameScene extends Phaser.Scene {
         this.pauseUI = new PauseUI({ x: 0, y: 0, scene: this })
         this.pauseUI.setVisible(false)
         this.pauseUI.setActive(false)
+        this.cameras.main.fadeIn(1000, 0, 0, 0)
+        this.input.setDefaultCursor('auto')
     }
 
-    update(): void {
-        this.player.update()
-
-        this.enemies.getChildren().forEach((enemy: any) => {
-            enemy.update()
-            if (this.player.active && enemy.active) {
-                const angle = Phaser.Math.Angle.Between(
-                    enemy.body.x,
-                    enemy.body.y,
-                    this.player.body.x,
-                    this.player.body.y
-                )
-
-                enemy.getBarrel().angle = (angle + Math.PI / 2) * Phaser.Math.RAD_TO_DEG
-            }
-        }, this)
+    update(time: number, delta: number): void {
+        this.stateMachine.update(time, delta)
     }
 
     private convertObjects(): void {

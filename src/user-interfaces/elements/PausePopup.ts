@@ -1,4 +1,5 @@
 import { IContainerConstructor } from '../../interfaces/container.interface'
+import { GameScene } from '../../scenes'
 import Button from './Button'
 
 class PausePopup extends Phaser.GameObjects.Container {
@@ -39,6 +40,8 @@ class PausePopup extends Phaser.GameObjects.Container {
             text: 'Continue',
             callback: () => {
                 console.log('continue')
+                const scene = this.scene as GameScene
+                scene.getStateMachine().transition('play')
             },
             width: 250,
             height: 80,
@@ -53,6 +56,10 @@ class PausePopup extends Phaser.GameObjects.Container {
             text: 'New Game',
             callback: () => {
                 console.log('new game')
+                this.scene.cameras.main.fadeOut(500, 0, 0, 0)
+                this.scene.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+                    this.scene.scene.restart()
+                })
             },
             width: 250,
             height: 80,
