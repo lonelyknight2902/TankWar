@@ -1,0 +1,157 @@
+{
+  "preload": {
+    "files": [
+      {
+        "type": "tilemapTiledJSON",
+        "key": "levelMap",
+        "url": "./assets/maps/levelMap.json"
+      },
+      {
+        "type": "bitmapFont",
+        "key": "font",
+        "textureURL": "./assets/font/font.png",
+        "fontDataURL": "./assets/font/font.fnt"
+      },
+      {
+        "type": "image",
+        "key": "tankBlue",
+        "url": "./assets/sprites/tankBody_blue.png"
+      },
+      {
+        "type": "image",
+        "key": "tankRed",
+        "url": "./assets/sprites/tank-red.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelBlue",
+        "url": "./assets/sprites/tankBlue_barrel1.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelRed",
+        "url": "./assets/sprites/barrel-red.png"
+      },
+      {
+        "type": "image",
+        "key": "bulletBlue",
+        "url": "./assets/sprites/bulletBlue1.png"
+      },
+      {
+        "type": "image",
+        "key": "bulletRed",
+        "url": "./assets/sprites/bullet-red.png"
+      },
+      {
+        "type": "image",
+        "key": "tiles",
+        "url": "./assets/tiles/tiles.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelGreyTop",
+        "url": "./assets/obstacles/barrel-grey-top.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelGreySideRust",
+        "url": "./assets/obstacles/barrel-grey-side-rust.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelGreySide",
+        "url": "./assets/obstacles/barrel-grey-side.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelRedTop",
+        "url": "./assets/obstacles/barrel-red-top.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelRedSide",
+        "url": "./assets/obstacles/barrel-red-side.png"
+      },
+      {
+        "type": "image",
+        "key": "treeSmall",
+        "url": "./assets/obstacles/tree-small.png"
+      },
+      {
+        "type": "image",
+        "key": "treeLarge",
+        "url": "./assets/obstacles/tree-large.png"
+      },
+      {
+        "type": "image",
+        "key": "explosion1",
+        "url": "./assets/sprites/explosion1.png"
+      },
+      {
+        "type": "image",
+        "key": "explosion2",
+        "url": "./assets/sprites/explosion2.png"
+      },
+      {
+        "type": "image",
+        "key": "explosion3",
+        "url": "./assets/sprites/explosion3.png"
+      },
+      {
+        "type": "image",
+        "key": "explosion4",
+        "url": "./assets/sprites/explosion4.png"
+      },
+      {
+        "type": "image",
+        "key": "explosion5",
+        "url": "./assets/sprites/explosion5.png"
+      },
+      {
+        "type": "image",
+        "key": "buttonSquareDepthBorder",
+        "url": "./assets/user-interfaces/Green/button_square_depth_border.png"
+      },
+      {
+        "type": "image",
+        "key": "buttonSquareDepthFlat",
+        "url": "./assets/user-interfaces/Green/button_square_depth_flat.png"
+      },
+      {
+        "type": "image",
+        "key": "buttonRectangleDepthLine",
+        "url": "./assets/user-interfaces/Default/button_rectangle_depth_line.png"
+      },
+      {
+        "type": "image",
+        "key": "buttonRectangleDepthBorder",
+        "url": "./assets/user-interfaces/Green/button_rectangle_depth_border.png"
+      },
+      {
+        "type": "image",
+        "key": "buttonRectangleDepthFlat",
+        "url": "./assets/user-interfaces/Green/button_rectangle_depth_flat.png"
+      },
+      {
+        "type": "image",
+        "key": "pause",
+        "url": "./assets/user-interfaces/icons/pause.png"
+      },
+      {
+        "type": "image",
+        "key": "forward",
+        "url": "./assets/user-interfaces/icons/forward.png"
+      },
+      {
+        "type": "image",
+        "key": "home",
+        "url": "./assets/user-interfaces/icons/home.png"
+      },
+      {
+        "type": "image",
+        "key": "return",
+        "url": "./assets/user-interfaces/icons/return.png"
+      }
+    ]
+  }
+}
