@@ -194,6 +194,25 @@ class GameScene extends Phaser.Scene {
             player.updateHealth()
             if (!player.active) {
                 this.stateMachine.transition('gameover')
+            } else {
+                const hitPointText = this.add.text(player.x, player.y, `-${DAMAGE}`, {
+                    fontSize: '48px',
+                    color: 'red',
+                    fontStyle: 'bold',
+                    fontFamily: 'Helvetica',
+                    stroke: 'black',
+                    strokeThickness: 10
+                })
+                hitPointText.setOrigin(0.5)
+                this.tweens.add({
+                    targets: hitPointText,
+                    y: hitPointText.y - 50,
+                    alpha: 0,
+                    duration: 500,
+                    onComplete: () => {
+                        hitPointText.destroy()
+                    },
+                })
             }
         }, 'medium')
     }
@@ -254,7 +273,10 @@ class GameScene extends Phaser.Scene {
                     color: 'red',
                     fontStyle: 'bold',
                     fontFamily: 'Helvetica',
+                    stroke: 'black',
+                    strokeThickness: 10
                 })
+                hitPointText.setOrigin(0.5)
                 this.tweens.add({
                     targets: hitPointText,
                     y: hitPointText.y - 50,

@@ -1,11 +1,13 @@
-import { GameScene } from "../../scenes";
-import State from "../State";
+import { GameScene } from '../../scenes'
+import State from '../State'
 
 class GameOverState extends State {
     private scene: GameScene
+    private explodeSound: Phaser.Sound.BaseSound
     constructor(scene: GameScene) {
         super()
         this.scene = scene
+        this.explodeSound = this.scene.sound.add('playerExplosion')
     }
 
     public enter(): void {
@@ -17,6 +19,7 @@ class GameOverState extends State {
             tween.pause()
         })
         this.scene.sound.pauseAll()
+        this.explodeSound.play()
         const gameOverUI = this.scene.getGameOverUI()
         gameOverUI.setVisible(true)
         gameOverUI.setActive(true)

@@ -23,7 +23,7 @@ const CONFIG: Phaser.Types.Core.GameConfig = {
             // debug: true,
         },
     },
-    backgroundColor: '#000000',
+    backgroundColor: '#80BE1F',
     render: {
         antialias: true,
     },

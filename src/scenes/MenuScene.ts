@@ -24,30 +24,39 @@ class MenuScene extends Phaser.Scene {
     }
 
     create(): void {
-        const background = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 'wallpaper')
+        const background = this.add.image(SCREEN_WIDTH / 2 + 100, SCREEN_HEIGHT / 2, 'wallpaper')
         background.setOrigin(0.5)
-        background.height = SCREEN_HEIGHT
+        background.setScale(SCREEN_HEIGHT / background.height)
         this.bitmapTexts.push(
             this.add
                 .bitmapText(
-                    this.sys.canvas.width / 2 - 120,
-                    this.sys.canvas.height / 2,
+                    200,
+                    this.sys.canvas.height / 2 + 300,
                     'font',
-                    'PRESS S TO PLAY',
+                    'NOTHING HAPPENED IN NINETEEN EIGHTY-NINE',
                     30
                 )
                 .setTint(0xff0000)
         )
 
+        const text = this.add
+            .bitmapText(200, this.sys.canvas.height / 2 + 400, 'font', 'PRESS S TO PLAY', 30)
+            .setTint(0xff0000)
+
+        this.tweens.add({
+            targets: text,
+            alpha: 0,
+            duration: 1000,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1,
+        })
+
+        this.bitmapTexts.push(text)
+
         this.bitmapTexts.push(
             this.add
-                .bitmapText(
-                    this.sys.canvas.width / 2 - 120,
-                    this.sys.canvas.height / 2 - 100,
-                    'font',
-                    'TANK WAR',
-                    100
-                )
+                .bitmapText(200, this.sys.canvas.height / 2 + 200, 'font', 'TANK WAR', 100)
                 .setTint(0xff0000)
         )
         this.currentMusic = this.menuMusics[Phaser.Math.RND.between(0, this.menuMusics.length - 1)]
@@ -60,7 +69,7 @@ class MenuScene extends Phaser.Scene {
                 this.menuMusics[Phaser.Math.RND.between(0, this.menuMusics.length - 1)]
             this.currentMusic.play()
         }
-        if (this.startKey.isDown) {
+        if (this.startKey.isDown && !this.start) {
             this.start = true
             // this.sound.pauseAll()
             this.cameras.main.fadeOut(500)

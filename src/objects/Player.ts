@@ -1,4 +1,12 @@
-import { DAMAGE, RELOAD_TIME, ROTATION_SPEED_DEGREES, SPEED, TOLERANCE } from '../constants'
+import {
+    DAMAGE,
+    RELOAD_TIME,
+    REPAIR_HEALTH,
+    REPAIRING_SPEED,
+    ROTATION_SPEED_DEGREES,
+    SPEED,
+    TOLERANCE,
+} from '../constants'
 import { IImageConstructor } from '../interfaces/image.interface'
 import Bullet from './Bullet'
 
@@ -29,6 +37,7 @@ class Player extends Phaser.GameObjects.Image {
     private forwardKey: Phaser.Input.Keyboard.Key
     private backwardKey: Phaser.Input.Keyboard.Key
     private shootingKey: Phaser.Input.Keyboard.Key
+    private repairKey: Phaser.Input.Keyboard.Key
     private engineSound0: Phaser.Sound.BaseSound
     private engineSound1: Phaser.Sound.BaseSound
     private engineSound2: Phaser.Sound.BaseSound
@@ -38,6 +47,13 @@ class Player extends Phaser.GameObjects.Image {
     private damageSpeeches: Phaser.Sound.BaseSound[]
     private killSpeeches: Phaser.Sound.BaseSound[]
     private smokeEmitter: Phaser.GameObjects.Particles.ParticleEmitter
+    private reloadingCircle: Phaser.GameObjects.Graphics
+    private reloadingPercentage: number
+    private repairCircle: Phaser.GameObjects.Graphics
+    private repairPercentage: number
+    private repairSound: Phaser.Sound.BaseSound
+    private isRepaired: boolean
+    private wrench: Phaser.GameObjects.Image
 
     public getBullets(): Phaser.GameObjects.Group {
         return this.bullets
@@ -50,6 +66,7 @@ class Player extends Phaser.GameObjects.Image {
         this.fireSound = this.scene.sound.add('cannonFire')
         this.shellSound = this.scene.sound.add('cannonShellDrop')
         this.reloadSound = this.scene.sound.add('cannonReload')
+        this.repairSound = this.scene.sound.add('repair', { volume: 0.5 })
         this.turretTurn = this.scene.sound.add('turretTurn', { volume: 0.3 })
         this.engineSound0 = this.scene.sound.add('engine0', { volume: 0.5 })
         this.engineSound1 = this.scene.sound.add('engine1', { volume: 0.5 })
@@ -83,6 +100,7 @@ class Player extends Phaser.GameObjects.Image {
             follow: this,
             followOffset: { x: 0, y: -10 },
         })
+
         this.smokeEmitter.setDepth(5)
         this.smokeEmitter.stop()
         this.scene.add.existing(this)
@@ -112,6 +130,22 @@ class Player extends Phaser.GameObjects.Image {
         this.lifeBar.setDepth(6)
         this.redrawLifebar()
 
+        this.reloadingCircle = this.scene.add.graphics()
+        this.reloadingCircle.setDepth(6)
+        this.reloadingCircle.name = 'reloadingCircle'
+        this.reloadingPercentage = 100
+
+        this.repairPercentage = 100
+        this.repairCircle = this.scene.add.graphics()
+        this.repairCircle.setDepth(6)
+        this.repairCircle.name = 'repairCircle'
+        this.isRepaired = true
+        this.wrench = this.scene.add.image(this.x, this.y, 'wrench')
+        this.wrench.setOrigin(0.5)
+        this.wrench.setVisible(false)
+        this.wrench.name = 'wrench'
+        this.wrench.setDepth(6)
+
         // game objects
         this.bullets = this.scene.add.group({
             /*classType: Bullet,*/
@@ -130,6 +164,7 @@ class Player extends Phaser.GameObjects.Image {
             this.shootingKey = this.scene.input.keyboard.addKey(
                 Phaser.Input.Keyboard.KeyCodes.SPACE
             )
+            this.repairKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
         }
 
         // physics
@@ -141,7 +176,7 @@ class Player extends Phaser.GameObjects.Image {
         this.state = 'idle'
     }
 
-    update(): void {
+    update(time: number, delta: number): void {
         if (this.active) {
             this.barrel.x = this.x
             this.barrel.y = this.y
@@ -149,6 +184,76 @@ class Player extends Phaser.GameObjects.Image {
             this.lifeBar.y = this.y
             this.handleInput()
             this.handleShooting()
+            if (this.repairKey.isDown) {
+                if (this.health < this.maxHealth) {
+                    if (this.repairPercentage >= 100 && this.isRepaired) {
+                        this.repairPercentage = 0
+                        this.isRepaired = false
+                    }
+                }
+                console.log(this.isRepaired)
+                if (this.repairPercentage < 100) {
+                    if (!this.repairSound.isPlaying) {
+                        this.repairSound.play({ loop: true })
+                    }
+                    this.wrench.setVisible(true)
+                    this.wrench.setPosition(this.x, this.y)
+                    this.repairPercentage += (100 / REPAIRING_SPEED) * delta
+                    this.repairCircle.clear()
+                    this.repairCircle.lineStyle(10, 0xffffff)
+                    this.repairCircle.beginPath()
+                    this.repairCircle.arc(
+                        this.x,
+                        this.y,
+                        20,
+                        0,
+                        Phaser.Math.DegToRad((this.repairPercentage * 3.6) % 360)
+                    )
+                    this.repairCircle.strokePath()
+                } else {
+                    this.repairCircle.clear()
+                    this.repairSound.stop()
+                    this.wrench.setVisible(false)
+                    console.log('done: ', this.isRepaired)
+                    if (!this.isRepaired) {
+                        if (this.health < this.maxHealth) {
+                            console.log(this.health)
+                            this.health += REPAIR_HEALTH
+                            console.log(this.health)
+                            if (this.health > this.maxHealth) {
+                                console.log(this.health, this.maxHealth)
+                                this.health = this.maxHealth
+                            }
+                            this.redrawLifebar()
+                        }
+                        if (this.health > this.maxHealth * 0.3) {
+                            this.smokeEmitter.stop()
+                        }
+                        this.isRepaired = true
+                    }
+                }
+            } else {
+                this.repairCircle.clear()
+                this.repairSound.stop()
+                this.wrench.setVisible(false)
+            }
+            if (this.reloadingPercentage < 100) {
+                this.reloadingPercentage += (100 / RELOAD_TIME) * delta
+                // console.log('reloading: ', this.reloadingPercentage)
+                this.reloadingCircle.clear()
+                this.reloadingCircle.lineStyle(10, 0xff0000)
+                this.reloadingCircle.beginPath()
+                this.reloadingCircle.arc(
+                    this.x,
+                    this.y - 50,
+                    20,
+                    0,
+                    Phaser.Math.DegToRad((this.reloadingPercentage * 3.6) % 360)
+                )
+                this.reloadingCircle.strokePath()
+            } else {
+                this.reloadingCircle.clear()
+            }
             if (this.body.speed == 0) {
                 if (!this.engineSound0.isPlaying) this.engineSound0.play()
                 if (this.engineSound1.isPlaying) this.engineSound1.stop()
@@ -331,9 +436,14 @@ class Player extends Phaser.GameObjects.Image {
     }
 
     private handleShooting(): void {
-        if (this.scene.input.activePointer.isDown && this.scene.time.now > this.lastShoot && !this.reloadSound.isPlaying) {
+        if (
+            this.scene.input.activePointer.isDown &&
+            this.scene.time.now > this.lastShoot &&
+            !this.reloadSound.isPlaying
+        ) {
             this.scene.cameras.main.shake(20, 0.005)
             this.fireSound.play()
+            this.reloadingPercentage = 0
             this.shellSound.play({ delay: 1, volume: 0.5 })
             this.reloadSound.play({ delay: 1.5, volume: 0.5 })
             this.scene.tweens.add({
@@ -388,6 +498,8 @@ class Player extends Phaser.GameObjects.Image {
             this.redrawLifebar()
             if (this.health / this.maxHealth < 0.3) {
                 this.smokeEmitter.start()
+            } else {
+                this.smokeEmitter.stop()
             }
         } else {
             this.health = 0

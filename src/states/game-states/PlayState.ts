@@ -15,7 +15,9 @@ class PlayState extends State {
     public execute(time: number, delta: number): void {
         console.log('Playing')
         const player = this.scene.getPlayer()
-        player.update()
+        player.update(time, delta)
+        const gameUI = this.scene.getGameUI()
+        gameUI.update(time, delta)
 
         this.scene.getEnemies().getChildren().forEach((enemy: any) => {
             enemy.update()
