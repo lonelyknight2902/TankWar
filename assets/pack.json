@@ -1,0 +1,342 @@
+{
+  "preload": {
+    "files": [
+      {
+        "type": "tilemapTiledJSON",
+        "key": "levelMap",
+        "url": "./assets/maps/levelMap.json"
+      },
+      {
+        "type": "bitmapFont",
+        "key": "font",
+        "textureURL": "./assets/font/font.png",
+        "fontDataURL": "./assets/font/font.fnt"
+      },
+      {
+        "type": "image",
+        "key": "tankBlue",
+        "url": "./assets/sprites/tankBody_blue.png"
+      },
+      {
+        "type": "image",
+        "key": "tankRed",
+        "url": "./assets/sprites/tank-red.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelBlue",
+        "url": "./assets/sprites/tankBlue_barrel1.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelRed",
+        "url": "./assets/sprites/barrel-red.png"
+      },
+      {
+        "type": "image",
+        "key": "bulletBlue",
+        "url": "./assets/sprites/bulletBlue1.png"
+      },
+      {
+        "type": "image",
+        "key": "bulletRed",
+        "url": "./assets/sprites/bullet-red.png"
+      },
+      {
+        "type": "image",
+        "key": "tiles",
+        "url": "./assets/tiles/tiles.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelGreyTop",
+        "url": "./assets/obstacles/barrel-grey-top.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelGreySideRust",
+        "url": "./assets/obstacles/barrel-grey-side-rust.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelGreySide",
+        "url": "./assets/obstacles/barrel-grey-side.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelRedTop",
+        "url": "./assets/obstacles/barrel-red-top.png"
+      },
+      {
+        "type": "image",
+        "key": "barrelRedSide",
+        "url": "./assets/obstacles/barrel-red-side.png"
+      },
+      {
+        "type": "image",
+        "key": "treeSmall",
+        "url": "./assets/obstacles/tree-small.png"
+      },
+      {
+        "type": "image",
+        "key": "treeLarge",
+        "url": "./assets/obstacles/tree-large.png"
+      },
+      {
+        "type": "image",
+        "key": "explosion1",
+        "url": "./assets/sprites/explosion1.png"
+      },
+      {
+        "type": "image",
+        "key": "explosion2",
+        "url": "./assets/sprites/explosion2.png"
+      },
+      {
+        "type": "image",
+        "key": "explosion3",
+        "url": "./assets/sprites/explosion3.png"
+      },
+      {
+        "type": "image",
+        "key": "explosion4",
+        "url": "./assets/sprites/explosion4.png"
+      },
+      {
+        "type": "image",
+        "key": "explosion5",
+        "url": "./assets/sprites/explosion5.png"
+      },
+      {
+        "type": "image",
+        "key": "buttonSquareDepthBorder",
+        "url": "./assets/user-interfaces/Green/button_square_depth_border.png"
+      },
+      {
+        "type": "image",
+        "key": "buttonSquareDepthFlat",
+        "url": "./assets/user-interfaces/Green/button_square_depth_flat.png"
+      },
+      {
+        "type": "image",
+        "key": "buttonRectangleDepthLine",
+        "url": "./assets/user-interfaces/Default/button_rectangle_depth_line.png"
+      },
+      {
+        "type": "image",
+        "key": "buttonRectangleDepthBorder",
+        "url": "./assets/user-interfaces/Green/button_rectangle_depth_border.png"
+      },
+      {
+        "type": "image",
+        "key": "buttonRectangleDepthFlat",
+        "url": "./assets/user-interfaces/Green/button_rectangle_depth_flat.png"
+      },
+      {
+        "type": "image",
+        "key": "pause",
+        "url": "./assets/user-interfaces/icons/pause.png"
+      },
+      {
+        "type": "image",
+        "key": "forward",
+        "url": "./assets/user-interfaces/icons/forward.png"
+      },
+      {
+        "type": "image",
+        "key": "home",
+        "url": "./assets/user-interfaces/icons/home.png"
+      },
+      {
+        "type": "image",
+        "key": "return",
+        "url": "./assets/user-interfaces/icons/return.png"
+      },
+      {
+        "type": "image",
+        "key": "audioOn",
+        "url": "./assets/user-interfaces/icons/audioOn.png"
+      },
+      {
+        "type": "image",
+        "key": "audioOff",
+        "url": "./assets/user-interfaces/icons/audioOff.png"
+      },
+      {
+        "type": "image",
+        "key": "wallpaper",
+        "url": "./assets/images/tank.jpg"
+      },
+      {
+        "type": "image",
+        "key": "smoke",
+        "url": "./assets/particles/smoke.png"
+      },
+      {
+        "type": "image",
+        "key": "wrench",
+        "url": "./assets/tool_wrench.png"
+      },
+      {
+        "type": "image",
+        "key": "goldMedal",
+        "url": "./assets/medals/flat_medal1.png"
+      },
+      {
+        "type": "audio",
+        "key": "ambient",
+        "url": "./assets/audios/Ambient/amb_forest.wav"
+      },
+      {
+        "type": "audio",
+        "key": "warAmbient",
+        "url": "./assets/audios/Ambient/warfare_amb_tanks_med.wav"
+      },
+      {
+        "type": "audio",
+        "key": "cannonFire",
+        "url": "./assets/audios/Cannon/cannon_75mm_m3_shot_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "cannonShellDrop",
+        "url": "./assets/audios/Cannon/cannon_shell_drop_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "cannonReload",
+        "url": "./assets/audios/Cannon/reload_cannon_20mm_1.wav"
+      },
+      {
+        "type": "audio",
+        "key": "bigHit",
+        "url": "./assets/audios/Hit/tank_hit_big_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "mediumHit",
+        "url": "./assets/audios/Hit/tank_hit_med_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "smallHit",
+        "url": "./assets/audios/Hit/tank_hit_small_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "turretTurn",
+        "url": "./assets/audios/Turret/turret_turn_loop_1.wav"
+      },
+      {
+        "type": "audio",
+        "key": "engine0",
+        "url": "./assets/audios/Engine/sherman_m4a1_engine_rpm_00.wav"
+      },
+      {
+        "type": "audio",
+        "key": "engine1",
+        "url": "./assets/audios/Engine/sherman_m4a1_engine_rpm_33.wav"
+      },
+      {
+        "type": "audio",
+        "key": "engine2",
+        "url": "./assets/audios/Engine/sherman_m4a1_engine_rpm_66_load.wav"
+      },
+      {
+        "type": "audio",
+        "key": "engine3",
+        "url": "./assets/audios/Engine/sherman_m4a1_engine_rpm_99.wav"
+      },
+      {
+        "type": "audio",
+        "key": "track1",
+        "url": "./assets/audios/Track/tracks_speed_33_1.wav"
+      },
+      {
+        "type": "audio",
+        "key": "track2",
+        "url": "./assets/audios/Track/tracks_speed_66_1.wav"
+      },
+      {
+        "type": "audio",
+        "key": "track3",
+        "url": "./assets/audios/Track/tracks_speed_99_1.wav"
+      },
+      {
+        "type": "audio",
+        "key": "explosion",
+        "url": "./assets/audios/Explosion/tank_destroyed_03.wav"
+      },
+      {
+        "type": "audio",
+        "key": "playerExplosion",
+        "url": "./assets/audios/Explosion/killscene_blast_ammoexplode_1.wav"
+      },
+      {
+        "type": "audio",
+        "key": "repair",
+        "url": "./assets/audios/Repair/extinguisher.wav"
+      },
+      {
+        "type": "audio",
+        "key": "damage1",
+        "url": "./assets/audios/Speech/Damage/ge_tank_damaged_v2_r1_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "damage2",
+        "url": "./assets/audios/Speech/Damage/ge_tank_damaged_v2_r2_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "damage3",
+        "url": "./assets/audios/Speech/Damage/ge_tank_damaged_v2_r3_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "damage4",
+        "url": "./assets/audios/Speech/Damage/ge_tank_damaged_v2_r4_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "kill1",
+        "url": "./assets/audios/Speech/Kill/ge_bomb_success_v3_r1_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "kill2",
+        "url": "./assets/audios/Speech/Kill/ge_bomb_success_v3_r2_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "kill3",
+        "url": "./assets/audios/Speech/Kill/ge_bomb_success_v3_r3_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "kill4",
+        "url": "./assets/audios/Speech/Kill/ge_bomb_success_v3_r4_t1_mood_high.wav"
+      },
+      {
+        "type": "audio",
+        "key": "music1",
+        "url": "./assets/audios/Music/Erica.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "music2",
+        "url": "./assets/audios/Music/MainTheme.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "music3",
+        "url": "./assets/audios/Music/Rebirth.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "music4",
+        "url": "./assets/audios/Music/Dogfight.mp3"
+      }
+    ]
+  }
+}
