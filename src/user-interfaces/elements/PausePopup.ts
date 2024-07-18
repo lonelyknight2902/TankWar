@@ -26,10 +26,12 @@ class PausePopup extends Phaser.GameObjects.Container {
         // this.background.height = 900
         // this.background.setScale(5, 10)
         const pauseText = aParams.scene.add.text(0, 0, 'Pause', {
-            color: '#000000',
+            color: '#ffffff',
             fontSize: '64px',
             fontFamily: 'Helvetica',
             fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 20,
         })
         this.continueButton = new Button({
             scene: aParams.scene,

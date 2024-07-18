@@ -1,9 +1,10 @@
 import { DAMAGE } from '../constants'
+import ScoreManager from '../managers/ScoreManager'
 import { Bullet, Enemy, Player } from '../objects'
 import { Obstacle } from '../objects/obstacles/obstacle'
-import { PauseState, PlayState } from '../states/game-states'
+import { GameOverState, PauseState, PlayState } from '../states/game-states'
 import StateMachine from '../states/StateMachine'
-import { GameUI, PauseUI } from '../user-interfaces'
+import { GameOverUI, GameUI, PauseUI } from '../user-interfaces'
 
 class GameScene extends Phaser.Scene {
     private map: Phaser.Tilemaps.Tilemap
@@ -14,10 +15,12 @@ class GameScene extends Phaser.Scene {
     private enemies: Phaser.GameObjects.Group
     private obstacles: Phaser.GameObjects.Group
     private enemyHitPlayerOverlap: Phaser.Physics.Arcade.Collider
+    private scoreManager: ScoreManager
 
     private target: Phaser.Math.Vector2
     private gameUI: GameUI
     private pauseUI: PauseUI
+    private gameOverUI: GameOverUI
     private stateMachine: StateMachine
     private ambientSound: Phaser.Sound.BaseSound
     private warAmbientSound: Phaser.Sound.BaseSound
@@ -108,8 +111,10 @@ class GameScene extends Phaser.Scene {
         this.stateMachine = new StateMachine('play', {
             play: new PlayState(this),
             pause: new PauseState(this),
+            gameover: new GameOverState(this),
         })
 
+        this.scoreManager = ScoreManager.getInstance()
         this.ambientSound = this.sound.add('ambient')
         this.warAmbientSound = this.sound.add('warAmbient')
         this.ambientSound.play({ loop: true, volume: 0.2 })
@@ -122,6 +127,11 @@ class GameScene extends Phaser.Scene {
         this.pauseUI = new PauseUI({ x: 0, y: 0, scene: this })
         this.pauseUI.setVisible(false)
         this.pauseUI.setActive(false)
+        this.gameOverUI = new GameOverUI({ x: 0, y: 0, scene: this })
+        this.pauseUI.setVisible(false)
+        this.pauseUI.setActive(false)
+        this.gameOverUI.setVisible(false)
+        this.gameOverUI.setActive(false)
         this.cameras.main.fadeIn(1000, 0, 0, 0)
         this.input.setDefaultCursor('auto')
     }
@@ -182,6 +192,9 @@ class GameScene extends Phaser.Scene {
         console.log('hit')
         bullet.explode(() => {
             player.updateHealth()
+            if (!player.active) {
+                this.stateMachine.transition('gameover')
+            }
         }, 'medium')
     }
 
@@ -194,6 +207,8 @@ class GameScene extends Phaser.Scene {
                 enemy.updateHealth()
                 if (!enemy.active) {
                     this.player.killEnemy()
+                    this.scoreManager.increaseScore(100)
+                    this.gameUI.showMedal()
                     const enemyKiledText = this.add.text(
                         this.player.x,
                         this.player.y,
@@ -222,6 +237,7 @@ class GameScene extends Phaser.Scene {
                         fontStyle: 'bold',
                         fontFamily: 'Helvetica',
                     })
+                    this.scoreManager.increaseScore(10)
                     enemyHitText.setOrigin(0.5)
                     this.tweens.add({
                         targets: enemyHitText,
@@ -268,6 +284,10 @@ class GameScene extends Phaser.Scene {
 
     public getPauseUI(): PauseUI {
         return this.pauseUI
+    }
+
+    public getGameOverUI(): GameOverUI {
+        return this.gameOverUI
     }
 
     public getStateMachine(): StateMachine {

@@ -168,6 +168,16 @@
         "url": "./assets/images/tank.jpg"
       },
       {
+        "type": "image",
+        "key": "smoke",
+        "url": "./assets/particles/smoke.png"
+      },
+      {
+        "type": "image",
+        "key": "goldMedal",
+        "url": "./assets/medals/flat_medal1.png"
+      },
+      {
         "type": "audio",
         "key": "ambient",
         "url": "./assets/audios/Ambient/amb_forest.wav"
@@ -181,6 +191,16 @@
         "type": "audio",
         "key": "cannonFire",
         "url": "./assets/audios/Cannon/cannon_75mm_m3_shot_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "cannonShellDrop",
+        "url": "./assets/audios/Cannon/cannon_shell_drop_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "cannonReload",
+        "url": "./assets/audios/Cannon/reload_cannon_20mm_1.wav"
       },
       {
         "type": "audio",
@@ -221,6 +241,21 @@
         "type": "audio",
         "key": "engine3",
         "url": "./assets/audios/Engine/sherman_m4a1_engine_rpm_99.wav"
+      },
+      {
+        "type": "audio",
+        "key": "track1",
+        "url": "./assets/audios/Track/tracks_speed_33_1.wav"
+      },
+      {
+        "type": "audio",
+        "key": "track2",
+        "url": "./assets/audios/Track/tracks_speed_66_1.wav"
+      },
+      {
+        "type": "audio",
+        "key": "track3",
+        "url": "./assets/audios/Track/tracks_speed_99_1.wav"
       },
       {
         "type": "audio",

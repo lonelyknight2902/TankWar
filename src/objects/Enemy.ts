@@ -18,6 +18,7 @@ class Enemy extends Phaser.GameObjects.Image {
 
     // game objects
     private bullets: Phaser.GameObjects.Group
+    private smokeEmitter: Phaser.GameObjects.Particles.ParticleEmitter
 
     public getBarrel(): Phaser.GameObjects.Image {
         return this.barrel
@@ -32,6 +33,18 @@ class Enemy extends Phaser.GameObjects.Image {
 
         this.initContainer()
         this.explodeSound = this.scene.sound.add('explosion')
+        this.smokeEmitter = this.scene.add.particles(0, 0, 'smoke', {
+            blendMode: 'MULTIPLY',
+            scale: { start: 0.5, end: 1 },
+            speed: { min: 20, max: 40 },
+            quantity: 1,
+            lifespan: 1000,
+            gravityY: -50,
+            follow: this,
+            followOffset: { x: 0, y: -10 },
+        })
+        this.smokeEmitter.setDepth(5)
+        this.smokeEmitter.stop()
         this.scene.add.existing(this)
     }
 
@@ -128,10 +141,14 @@ class Enemy extends Phaser.GameObjects.Image {
         if (this.health > 0) {
             this.health -= DAMAGE
             this.redrawLifebar()
+            if (this.health / this.maxHealth < 0.3) {
+                this.smokeEmitter.start()
+            }
         } else {
             this.health = 0
             this.active = false
             this.explodeSound.play()
+            this.smokeEmitter.stop()
         }
     }
 }

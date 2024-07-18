@@ -1,4 +1,4 @@
-import { RELOAD_TIME, ROTATION_SPEED_DEGREES, SPEED, TOLERANCE } from '../constants'
+import { DAMAGE, RELOAD_TIME, ROTATION_SPEED_DEGREES, SPEED, TOLERANCE } from '../constants'
 import { IImageConstructor } from '../interfaces/image.interface'
 import Bullet from './Bullet'
 
@@ -7,6 +7,7 @@ class Player extends Phaser.GameObjects.Image {
 
     // variables
     private health: number
+    private maxHealth: number
     private lastShoot: number
     private speed: number
 
@@ -17,6 +18,8 @@ class Player extends Phaser.GameObjects.Image {
     // game objects
     private bullets: Phaser.GameObjects.Group
     private fireSound: Phaser.Sound.BaseSound
+    private shellSound: Phaser.Sound.BaseSound
+    private reloadSound: Phaser.Sound.BaseSound
     private turretTurn: Phaser.Sound.BaseSound
 
     // input
@@ -30,8 +33,11 @@ class Player extends Phaser.GameObjects.Image {
     private engineSound1: Phaser.Sound.BaseSound
     private engineSound2: Phaser.Sound.BaseSound
     private engineSound3: Phaser.Sound.BaseSound
+    private trackSounds: Phaser.Sound.BaseSound[]
+    private currentTrack: Phaser.Sound.BaseSound
     private damageSpeeches: Phaser.Sound.BaseSound[]
     private killSpeeches: Phaser.Sound.BaseSound[]
+    private smokeEmitter: Phaser.GameObjects.Particles.ParticleEmitter
 
     public getBullets(): Phaser.GameObjects.Group {
         return this.bullets
@@ -42,6 +48,8 @@ class Player extends Phaser.GameObjects.Image {
 
         this.initImage()
         this.fireSound = this.scene.sound.add('cannonFire')
+        this.shellSound = this.scene.sound.add('cannonShellDrop')
+        this.reloadSound = this.scene.sound.add('cannonReload')
         this.turretTurn = this.scene.sound.add('turretTurn', { volume: 0.3 })
         this.engineSound0 = this.scene.sound.add('engine0', { volume: 0.5 })
         this.engineSound1 = this.scene.sound.add('engine1', { volume: 0.5 })
@@ -59,12 +67,31 @@ class Player extends Phaser.GameObjects.Image {
             this.scene.sound.add('kill3', { volume: 3 }),
             this.scene.sound.add('kill4', { volume: 3 }),
         ]
+        this.trackSounds = [
+            this.scene.sound.add('track1', { volume: 0.3 }),
+            this.scene.sound.add('track2', { volume: 0.3 }),
+            this.scene.sound.add('track3', { volume: 0.3 }),
+        ]
+        this.currentTrack = this.trackSounds[0]
+        this.smokeEmitter = this.scene.add.particles(0, 0, 'smoke', {
+            blendMode: 'MULTIPLY',
+            scale: { start: 0.5, end: 1 },
+            speed: { min: 20, max: 40 },
+            quantity: 1,
+            lifespan: 1000,
+            gravityY: -50,
+            follow: this,
+            followOffset: { x: 0, y: -10 },
+        })
+        this.smokeEmitter.setDepth(5)
+        this.smokeEmitter.stop()
         this.scene.add.existing(this)
     }
 
     private initImage() {
         // variables
-        this.health = 1
+        this.health = 100
+        this.maxHealth = 100
         this.lastShoot = 0
         this.speed = SPEED
 
@@ -82,6 +109,7 @@ class Player extends Phaser.GameObjects.Image {
         this.barrel.setScale(2)
 
         this.lifeBar = this.scene.add.graphics()
+        this.lifeBar.setDepth(6)
         this.redrawLifebar()
 
         // game objects
@@ -126,21 +154,37 @@ class Player extends Phaser.GameObjects.Image {
                 if (this.engineSound1.isPlaying) this.engineSound1.stop()
                 if (this.engineSound2.isPlaying) this.engineSound2.stop()
                 if (this.engineSound3.isPlaying) this.engineSound3.stop()
+                this.currentTrack.stop()
             } else if (this.body.speed < SPEED / 3) {
                 if (this.engineSound0.isPlaying) this.engineSound0.stop()
                 if (!this.engineSound1.isPlaying) this.engineSound1.play()
                 if (this.engineSound2.isPlaying) this.engineSound2.stop()
                 if (this.engineSound3.isPlaying) this.engineSound3.stop()
+                if (this.currentTrack != this.trackSounds[0]) this.currentTrack.stop()
+                this.currentTrack = this.trackSounds[0]
+                if (!this.currentTrack.isPlaying) {
+                    this.currentTrack.play({ loop: true })
+                }
             } else if (this.body.speed < (SPEED * 2) / 3) {
                 if (this.engineSound0.isPlaying) this.engineSound0.stop()
                 if (this.engineSound1.isPlaying) this.engineSound1.stop()
                 if (!this.engineSound2.isPlaying) this.engineSound2.play()
                 if (this.engineSound3.isPlaying) this.engineSound3.stop()
+                if (this.currentTrack != this.trackSounds[1]) this.currentTrack.stop()
+                this.currentTrack = this.trackSounds[1]
+                if (!this.currentTrack.isPlaying) {
+                    this.currentTrack.play({ loop: true })
+                }
             } else {
                 if (this.engineSound0.isPlaying) this.engineSound0.stop()
                 if (this.engineSound1.isPlaying) this.engineSound1.stop()
                 if (this.engineSound2.isPlaying) this.engineSound2.stop()
                 if (!this.engineSound3.isPlaying) this.engineSound3.play()
+                if (this.currentTrack != this.trackSounds[2]) this.currentTrack.stop()
+                this.currentTrack = this.trackSounds[2]
+                if (!this.currentTrack.isPlaying) {
+                    this.currentTrack.play({ loop: true })
+                }
             }
         } else {
             this.destroy()
@@ -157,10 +201,16 @@ class Player extends Phaser.GameObjects.Image {
         this.body.angularVelocity = 0
 
         // rotate tank
-        if (this.rotateKeyLeft.isDown) {
+        if (
+            (this.rotateKeyLeft.isDown && this.state != 'backward') ||
+            (this.rotateKeyRight.isDown && this.state == 'backward')
+        ) {
             // this.rotation -= 0.02
             this.body.angularVelocity = -ROTATION_SPEED_DEGREES
-        } else if (this.rotateKeyRight.isDown) {
+        } else if (
+            (this.rotateKeyRight.isDown && this.state != 'backward') ||
+            (this.rotateKeyLeft.isDown && this.state == 'backward')
+        ) {
             // this.rotation += 0.02
             this.body.angularVelocity = ROTATION_SPEED_DEGREES
         }
@@ -281,9 +331,11 @@ class Player extends Phaser.GameObjects.Image {
     }
 
     private handleShooting(): void {
-        if (this.scene.input.activePointer.isDown && this.scene.time.now > this.lastShoot) {
+        if (this.scene.input.activePointer.isDown && this.scene.time.now > this.lastShoot && !this.reloadSound.isPlaying) {
             this.scene.cameras.main.shake(20, 0.005)
             this.fireSound.play()
+            this.shellSound.play({ delay: 1, volume: 0.5 })
+            this.reloadSound.play({ delay: 1.5, volume: 0.5 })
             this.scene.tweens.add({
                 targets: this,
                 props: { alpha: 0.8 },
@@ -318,7 +370,12 @@ class Player extends Phaser.GameObjects.Image {
     private redrawLifebar(): void {
         this.lifeBar.clear()
         this.lifeBar.fillStyle(0xe66a28, 1)
-        this.lifeBar.fillRect(-this.width / 2, this.height / 2, this.width * this.health, 15)
+        this.lifeBar.fillRect(
+            -this.width / 2,
+            this.height / 2,
+            (this.width * this.health) / this.maxHealth,
+            15
+        )
         this.lifeBar.lineStyle(2, 0xffffff)
         this.lifeBar.strokeRect(-this.width / 2, this.height / 2, this.width, 15)
         this.lifeBar.setDepth(1)
@@ -326,14 +383,17 @@ class Player extends Phaser.GameObjects.Image {
 
     public updateHealth(): void {
         this.damageSpeeches[Phaser.Math.RND.between(0, 3)].play()
-        // if (this.health > 0) {
-        //     this.health -= 0.05
-        //     this.redrawLifebar()
-        // } else {
-        //     this.health = 0
-        //     this.active = false
-        //     this.scene.scene.start('MenuScene')
-        // }
+        if (this.health > 0) {
+            this.health -= DAMAGE
+            this.redrawLifebar()
+            if (this.health / this.maxHealth < 0.3) {
+                this.smokeEmitter.start()
+            }
+        } else {
+            this.health = 0
+            this.active = false
+            // this.scene.scene.start('MenuScene')
+        }
     }
 
     public killEnemy(): void {
