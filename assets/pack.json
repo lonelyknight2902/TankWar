@@ -183,6 +183,11 @@
         "url": "./assets/medals/flat_medal1.png"
       },
       {
+        "type": "image",
+        "key": "crosshair",
+        "url": "./assets/cursors/target_round_b.png"
+      },
+      {
         "type": "audio",
         "key": "ambient",
         "url": "./assets/audios/Ambient/amb_forest.wav"
@@ -206,6 +211,26 @@
         "type": "audio",
         "key": "cannonReload",
         "url": "./assets/audios/Cannon/reload_cannon_20mm_1.wav"
+      },
+      {
+        "type": "audio",
+        "key": "mgFire",
+        "url": "./assets/audios/MG/mg_8mm_dt_loop.wav"
+      },
+      {
+        "type": "audio",
+        "key": "mgFireLastShot",
+        "url": "./assets/audios/MG/mg_8mm_dt_lastshot_01.wav"
+      },
+      {
+        "type": "audio",
+        "key": "mgShellDrop",
+        "url": "./assets/audios/MG/shells_loop.wav"
+      },
+      {
+        "type": "audio",
+        "key": "mgLastShell",
+        "url": "./assets/audios/MG/shell_drop_single_01.wav"
       },
       {
         "type": "audio",
