@@ -114,6 +114,17 @@ class Enemy extends Phaser.GameObjects.Image {
 
     private handleShooting(): void {
         if (this.scene.time.now > this.lastShoot) {
+            this.muzzleFlash.x = this.barrel.x + Math.cos(this.barrel.rotation - Math.PI / 2) * 70
+            this.muzzleFlash.y = this.barrel.y + Math.sin(this.barrel.rotation - Math.PI / 2) * 70
+            this.muzzleFlash.rotation = this.barrel.rotation + Math.PI
+            this.scene.tweens.add({
+                targets: this.muzzleFlash,
+                alpha: 1,
+                duration: 100,
+                ease: 'Power1',
+                yoyo: true,
+                repeat: 0,
+            })
             if (this.bullets.getLength() < 10) {
                 this.bullets.add(
                     new Bullet({
@@ -124,20 +135,6 @@ class Enemy extends Phaser.GameObjects.Image {
                         texture: 'bulletRed',
                     })
                 )
-                this.muzzleFlash.x =
-                    this.barrel.x + Math.cos(this.barrel.rotation - Math.PI / 2) * 70
-                this.muzzleFlash.y =
-                    this.barrel.y + Math.sin(this.barrel.rotation - Math.PI / 2) * 70
-                this.muzzleFlash.rotation = this.barrel.rotation + Math.PI
-                this.scene.tweens.add({
-                    targets: this.muzzleFlash,
-                    alpha: 1,
-                    duration: 100,
-                    ease: 'Power1',
-                    yoyo: true,
-                    repeat: 0,
-                })
-
                 this.lastShoot = this.scene.time.now + RELOAD_TIME
             }
         }
