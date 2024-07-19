@@ -15,6 +15,7 @@ class Enemy extends Phaser.GameObjects.Image {
     // children
     private barrel: Phaser.GameObjects.Image
     private lifeBar: Phaser.GameObjects.Graphics
+    private muzzleFlash: Phaser.GameObjects.Image
 
     // game objects
     private bullets: Phaser.GameObjects.Group
@@ -57,6 +58,12 @@ class Enemy extends Phaser.GameObjects.Image {
 
         // image
         this.setDepth(0)
+
+        this.muzzleFlash = this.scene.add.image(0, 0, 'muzzleFlash')
+        this.muzzleFlash.setOrigin(0.5)
+        this.muzzleFlash.setDepth(6)
+        this.muzzleFlash.setAlpha(0)
+        this.muzzleFlash.setScale(2)
 
         this.barrel = this.scene.add.image(0, 0, 'barrelRed')
         this.barrel.setOrigin(0.5, 1)
@@ -117,6 +124,19 @@ class Enemy extends Phaser.GameObjects.Image {
                         texture: 'bulletRed',
                     })
                 )
+                this.muzzleFlash.x =
+                    this.barrel.x + Math.cos(this.barrel.rotation - Math.PI / 2) * 70
+                this.muzzleFlash.y =
+                    this.barrel.y + Math.sin(this.barrel.rotation - Math.PI / 2) * 70
+                this.muzzleFlash.rotation = this.barrel.rotation + Math.PI
+                this.scene.tweens.add({
+                    targets: this.muzzleFlash,
+                    alpha: 1,
+                    duration: 100,
+                    ease: 'Power1',
+                    yoyo: true,
+                    repeat: 0,
+                })
 
                 this.lastShoot = this.scene.time.now + RELOAD_TIME
             }
@@ -140,6 +160,9 @@ class Enemy extends Phaser.GameObjects.Image {
     public updateHealth(damage = DAMAGE): void {
         if (this.health > 0) {
             this.health -= damage
+            if (this.health < 0) {
+                this.health = 0
+            }
             this.redrawLifebar()
             if (this.health / this.maxHealth < 0.3) {
                 this.smokeEmitter.start()

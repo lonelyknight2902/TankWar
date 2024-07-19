@@ -63,6 +63,8 @@ class Player extends Phaser.GameObjects.Image {
     private isRepaired: boolean
     private wrench: Phaser.GameObjects.Image
     private crosshair: Phaser.GameObjects.Image
+    private muzzleFlash: Phaser.GameObjects.Image
+    private mgMuzzleFlash: Phaser.GameObjects.Image
 
     public getBullets(): Phaser.GameObjects.Group {
         return this.bullets
@@ -136,6 +138,15 @@ class Player extends Phaser.GameObjects.Image {
         this.setDepth(0)
         this.angle = 180
 
+        this.muzzleFlash = this.scene.add.image(this.x, this.y, 'muzzleFlash')
+        this.muzzleFlash.setDepth(6)
+        this.muzzleFlash.setAlpha(0)
+        this.muzzleFlash.setOrigin(0.5)
+        this.muzzleFlash.setScale(2)
+        this.mgMuzzleFlash = this.scene.add.image(this.x, this.y, 'mgMuzzleFlash')
+        this.mgMuzzleFlash.setDepth(6)
+        this.mgMuzzleFlash.setAlpha(0)
+        this.mgMuzzleFlash.setOrigin(0.5)
         this.barrel = this.scene.physics.add.sprite(this.x, this.y, 'barrelBlue')
         this.barrel.setOrigin(0.5, 1)
         this.barrel.setDepth(1)
@@ -504,6 +515,25 @@ class Player extends Phaser.GameObjects.Image {
                 paused: false,
             })
 
+            this.muzzleFlash.setRotation(this.barrel.rotation + Math.PI)
+            const muzzleFlashX = this.barrel.x + Math.cos(this.barrel.rotation - Math.PI / 2) * 70
+            const muzzleFlashY = this.barrel.y + Math.sin(this.barrel.rotation - Math.PI / 2) * 70
+            this.muzzleFlash.setPosition(muzzleFlashX, muzzleFlashY)
+
+            this.scene.tweens.add({
+                targets: this.muzzleFlash,
+                props: { alpha: 1 },
+                delay: 0,
+                duration: 100,
+                ease: 'Power1',
+                easeParams: null,
+                hold: 0,
+                repeat: 0,
+                repeatDelay: 0,
+                yoyo: true,
+                paused: false,
+            })
+
             if (this.bullets.getLength() < 10) {
                 const bullet = new Bullet({
                     scene: this.scene,
@@ -543,6 +573,24 @@ class Player extends Phaser.GameObjects.Image {
                 yoyo: true,
                 paused: false,
             })
+            this.mgMuzzleFlash.setRotation(this.barrel.rotation + Math.PI)
+            const muzzleFlashX = this.barrel.x + Math.cos(this.barrel.rotation - Math.PI / 2) * 70
+            const muzzleFlashY = this.barrel.y + Math.sin(this.barrel.rotation - Math.PI / 2) * 70
+            this.mgMuzzleFlash.setPosition(muzzleFlashX, muzzleFlashY)
+
+            this.scene.tweens.add({
+                targets: this.mgMuzzleFlash,
+                props: { alpha: 1 },
+                delay: 0,
+                duration: 70,
+                ease: 'Power1',
+                easeParams: null,
+                hold: 0,
+                repeat: 0,
+                repeatDelay: 0,
+                yoyo: true,
+                paused: false,
+            })
 
             if (this.mgbullets.getLength() < 20) {
                 const bullet = new MGBullet({
@@ -567,6 +615,8 @@ class Player extends Phaser.GameObjects.Image {
                 this.mgShellSound.stop()
                 this.mgLastShellSound.play()
             }
+
+            this.mgMuzzleFlash.setAlpha(0)
         }
     }
 

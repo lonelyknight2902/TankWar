@@ -184,6 +184,16 @@
       },
       {
         "type": "image",
+        "key": "muzzleFlash",
+        "url": "./assets/muzzle/shotLarge.png"
+      },
+      {
+        "type": "image",
+        "key": "mgMuzzleFlash",
+        "url": "./assets/muzzle/shotThin.png"
+      },
+      {
+        "type": "image",
         "key": "crosshair",
         "url": "./assets/cursors/target_round_b.png"
       },
