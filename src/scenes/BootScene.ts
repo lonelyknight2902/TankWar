@@ -40,6 +40,7 @@ class BootScene extends Phaser.Scene {
 
         // load our package
         this.load.pack('preload', './assets/pack.json', 'preload')
+        this.input.setDefaultCursor('url(assets/cursors/cursor_none.png), pointer')
     }
 
     update(): void {

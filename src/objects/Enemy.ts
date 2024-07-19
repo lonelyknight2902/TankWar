@@ -137,9 +137,9 @@ class Enemy extends Phaser.GameObjects.Image {
         this.lifeBar.setDepth(1)
     }
 
-    public updateHealth(): void {
+    public updateHealth(damage = DAMAGE): void {
         if (this.health > 0) {
-            this.health -= DAMAGE
+            this.health -= damage
             this.redrawLifebar()
             if (this.health / this.maxHealth < 0.3) {
                 this.smokeEmitter.start()

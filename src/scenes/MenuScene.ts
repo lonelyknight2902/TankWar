@@ -61,6 +61,8 @@ class MenuScene extends Phaser.Scene {
         )
         this.currentMusic = this.menuMusics[Phaser.Math.RND.between(0, this.menuMusics.length - 1)]
         this.currentMusic.play()
+        console.log('haha')
+        this.start = false
     }
 
     update(): void {
@@ -75,7 +77,6 @@ class MenuScene extends Phaser.Scene {
             this.cameras.main.fadeOut(500)
             this.cameras.main.once('camerafadeoutcomplete', () => {
                 // this.start = false
-                this.shutdown()
                 this.scene.start('GameScene')
             })
         }

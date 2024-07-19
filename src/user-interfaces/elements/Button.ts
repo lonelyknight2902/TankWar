@@ -62,12 +62,7 @@ class Button extends Phaser.GameObjects.Container {
             //     this.hoverBackground.height = this.text.height + 40
             // }
             Phaser.Display.Align.In.LeftCenter(this.icon, this.background, -10, 0)
-            Phaser.Display.Align.In.LeftCenter(
-                this.text,
-                this.background,
-                -20 - this.icon.width,
-                0
-            )
+            Phaser.Display.Align.In.LeftCenter(this.text, this.background, -20 - this.icon.width, 0)
         } else if (text) {
             // this.background.width = this.text.width + 40
             // this.background.height = this.text.height + 40
@@ -91,13 +86,13 @@ class Button extends Phaser.GameObjects.Container {
 
         this.setSize(this.background.displayWidth, this.background.displayHeight)
         // const rect = new Phaser.Geom.Rectangle(0, 0, this.background.width, this.background.height)
-        this.setInteractive(
-            new Phaser.Geom.Rectangle(0, 0, this.background.width, this.background.height),
-            Phaser.Geom.Rectangle.Contains
-        ).on('pointerdown', () => {
-            console.log('click')
-            this.setY(this.y + 5)
-        })
+        this.setInteractive({ cursor: 'url(assets/cursors/hand_point.png), pointer' }).on(
+            'pointerdown',
+            () => {
+                console.log('click')
+                this.setY(this.y + 5)
+            }
+        )
 
         this.on('pointerup', () => {
             this.callback()
@@ -112,7 +107,7 @@ class Button extends Phaser.GameObjects.Container {
             }
             if (this.icon) this.icon.clearTint()
             if (this.text) this.text.setColor('#fff')
-            this.scene.input.setDefaultCursor('pointer')
+            // this.scene.input.setDefaultCursor('pointer')
         })
 
         this.on('pointerout', () => {
@@ -124,7 +119,7 @@ class Button extends Phaser.GameObjects.Container {
             }
             if (this.icon) this.icon.setTintFill(0x16bb77)
             if (this.text) this.text.setColor('#16bb77')
-            this.scene.input.setDefaultCursor('auto')
+            // this.scene.input.setDefaultCursor('auto')
             console.log('pointerout')
         })
         this.setScrollFactor(0)

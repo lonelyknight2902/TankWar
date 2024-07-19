@@ -70,6 +70,22 @@ class GameScene extends Phaser.Scene {
             )
 
             this.physics.add.collider(
+                this.player.getMGBullets(),
+                this.layer,
+                this.bulletHitLayer,
+                undefined,
+                this
+            )
+
+            this.physics.add.collider(
+                this.player.getMGBullets(),
+                this.obstacles,
+                this.bulletHitObstacles,
+                undefined,
+                this
+            )
+
+            this.physics.add.collider(
                 this.player.getBullets(),
                 this.obstacles,
                 this.bulletHitObstacles,
@@ -85,6 +101,15 @@ class GameScene extends Phaser.Scene {
                     undefined,
                     this
                 )
+
+                this.physics.add.overlap(
+                    this.player.getMGBullets(),
+                    enemy,
+                    this.playerMGBulletHitEnemy,
+                    undefined,
+                    this
+                )
+
                 this.enemyHitPlayerOverlap = this.physics.add.overlap(
                     enemy.getBullets(),
                     this.player,
@@ -133,7 +158,6 @@ class GameScene extends Phaser.Scene {
         this.gameOverUI.setVisible(false)
         this.gameOverUI.setActive(false)
         this.cameras.main.fadeIn(1000, 0, 0, 0)
-        this.input.setDefaultCursor('auto')
     }
 
     update(time: number, delta: number): void {
@@ -201,7 +225,7 @@ class GameScene extends Phaser.Scene {
                     fontStyle: 'bold',
                     fontFamily: 'Helvetica',
                     stroke: 'black',
-                    strokeThickness: 10
+                    strokeThickness: 10,
                 })
                 hitPointText.setOrigin(0.5)
                 this.tweens.add({
@@ -214,7 +238,7 @@ class GameScene extends Phaser.Scene {
                     },
                 })
             }
-        }, 'medium')
+        }, 'big')
     }
 
     private playerBulletHitEnemy(bullet: any, enemy: any): void {
@@ -274,7 +298,82 @@ class GameScene extends Phaser.Scene {
                     fontStyle: 'bold',
                     fontFamily: 'Helvetica',
                     stroke: 'black',
-                    strokeThickness: 10
+                    strokeThickness: 10,
+                })
+                hitPointText.setOrigin(0.5)
+                this.tweens.add({
+                    targets: hitPointText,
+                    y: hitPointText.y - 50,
+                    alpha: 0,
+                    duration: 500,
+                    onComplete: () => {
+                        hitPointText.destroy()
+                    },
+                })
+            },
+            'medium',
+            distance
+        )
+    }
+
+    private playerMGBulletHitEnemy(bullet: any, enemy: any): void {
+        bullet.body.setVelocity(0)
+        this.physics.world.remove(bullet.body)
+        const distance = Phaser.Math.Distance.Between(bullet.x, bullet.y, enemy.x, enemy.y) / 1000
+        bullet.explode(
+            () => {
+                enemy.updateHealth(1)
+                if (!enemy.active) {
+                    this.player.killEnemy()
+                    this.scoreManager.increaseScore(100)
+                    this.gameUI.showMedal()
+                    const enemyKiledText = this.add.text(
+                        this.player.x,
+                        this.player.y,
+                        'Enemy killed',
+                        {
+                            fontSize: '48px',
+                            color: 'white',
+                            fontStyle: 'bold',
+                            fontFamily: 'Helvetica',
+                        }
+                    )
+                    enemyKiledText.setOrigin(0.5)
+                    this.tweens.add({
+                        targets: enemyKiledText,
+                        y: enemyKiledText.y - 50,
+                        alpha: 0,
+                        duration: 1000,
+                        onComplete: () => {
+                            enemyKiledText.destroy()
+                        },
+                    })
+                } else {
+                    const enemyHitText = this.add.text(this.player.x, this.player.y, 'Enemy Hit', {
+                        fontSize: '24px',
+                        color: 'white',
+                        fontStyle: 'bold',
+                        fontFamily: 'Helvetica',
+                    })
+                    this.scoreManager.increaseScore(1)
+                    enemyHitText.setOrigin(0.5)
+                    this.tweens.add({
+                        targets: enemyHitText,
+                        y: enemyHitText.y - 50,
+                        alpha: 0,
+                        duration: 1000,
+                        onComplete: () => {
+                            enemyHitText.destroy()
+                        },
+                    })
+                }
+                const hitPointText = this.add.text(enemy.x, enemy.y, `-${1}`, {
+                    fontSize: '48px',
+                    color: 'red',
+                    fontStyle: 'bold',
+                    fontFamily: 'Helvetica',
+                    stroke: 'black',
+                    strokeThickness: 10,
                 })
                 hitPointText.setOrigin(0.5)
                 this.tweens.add({

@@ -9,6 +9,7 @@ import {
 } from '../constants'
 import { IImageConstructor } from '../interfaces/image.interface'
 import Bullet from './Bullet'
+import MGBullet from './MGBullet'
 
 class Player extends Phaser.GameObjects.Image {
     body: Phaser.Physics.Arcade.Body
@@ -17,6 +18,7 @@ class Player extends Phaser.GameObjects.Image {
     private health: number
     private maxHealth: number
     private lastShoot: number
+    private lastMGShoot: number
     private speed: number
 
     // children
@@ -25,8 +27,13 @@ class Player extends Phaser.GameObjects.Image {
 
     // game objects
     private bullets: Phaser.GameObjects.Group
+    private mgbullets: Phaser.GameObjects.Group
+    private mgFireSound: Phaser.Sound.BaseSound
+    private mgFireLastShotSound: Phaser.Sound.BaseSound
     private fireSound: Phaser.Sound.BaseSound
     private shellSound: Phaser.Sound.BaseSound
+    private mgShellSound: Phaser.Sound.BaseSound
+    private mgLastShellSound: Phaser.Sound.BaseSound
     private reloadSound: Phaser.Sound.BaseSound
     private turretTurn: Phaser.Sound.BaseSound
 
@@ -37,6 +44,7 @@ class Player extends Phaser.GameObjects.Image {
     private forwardKey: Phaser.Input.Keyboard.Key
     private backwardKey: Phaser.Input.Keyboard.Key
     private shootingKey: Phaser.Input.Keyboard.Key
+    private mgShootingKey: Phaser.Input.Keyboard.Key
     private repairKey: Phaser.Input.Keyboard.Key
     private engineSound0: Phaser.Sound.BaseSound
     private engineSound1: Phaser.Sound.BaseSound
@@ -54,9 +62,14 @@ class Player extends Phaser.GameObjects.Image {
     private repairSound: Phaser.Sound.BaseSound
     private isRepaired: boolean
     private wrench: Phaser.GameObjects.Image
+    private crosshair: Phaser.GameObjects.Image
 
     public getBullets(): Phaser.GameObjects.Group {
         return this.bullets
+    }
+
+    public getMGBullets(): Phaser.GameObjects.Group {
+        return this.mgbullets
     }
 
     constructor(aParams: IImageConstructor) {
@@ -64,8 +77,12 @@ class Player extends Phaser.GameObjects.Image {
 
         this.initImage()
         this.fireSound = this.scene.sound.add('cannonFire')
+        this.mgFireSound = this.scene.sound.add('mgFire')
         this.shellSound = this.scene.sound.add('cannonShellDrop')
         this.reloadSound = this.scene.sound.add('cannonReload')
+        this.mgShellSound = this.scene.sound.add('mgShellDrop')
+        this.mgFireLastShotSound = this.scene.sound.add('mgFireLastShot')
+        this.mgLastShellSound = this.scene.sound.add('mgLastShell')
         this.repairSound = this.scene.sound.add('repair', { volume: 0.5 })
         this.turretTurn = this.scene.sound.add('turretTurn', { volume: 0.3 })
         this.engineSound0 = this.scene.sound.add('engine0', { volume: 0.5 })
@@ -111,6 +128,7 @@ class Player extends Phaser.GameObjects.Image {
         this.health = 100
         this.maxHealth = 100
         this.lastShoot = 0
+        this.lastMGShoot = 0
         this.speed = SPEED
 
         // image
@@ -146,8 +164,18 @@ class Player extends Phaser.GameObjects.Image {
         this.wrench.name = 'wrench'
         this.wrench.setDepth(6)
 
+        this.crosshair = this.scene.add.image(0, 0, 'crosshair')
+        this.crosshair.setOrigin(0.5)
+
         // game objects
         this.bullets = this.scene.add.group({
+            /*classType: Bullet,*/
+            active: true,
+            maxSize: 10,
+            runChildUpdate: true,
+        })
+
+        this.mgbullets = this.scene.add.group({
             /*classType: Bullet,*/
             active: true,
             maxSize: 10,
@@ -165,6 +193,9 @@ class Player extends Phaser.GameObjects.Image {
                 Phaser.Input.Keyboard.KeyCodes.SPACE
             )
             this.repairKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
+            this.mgShootingKey = this.scene.input.keyboard.addKey(
+                Phaser.Input.Keyboard.KeyCodes.SPACE
+            )
         }
 
         // physics
@@ -184,6 +215,7 @@ class Player extends Phaser.GameObjects.Image {
             this.lifeBar.y = this.y
             this.handleInput()
             this.handleShooting()
+            this.handleMGShooting()
             if (this.repairKey.isDown) {
                 if (this.health < this.maxHealth) {
                     if (this.repairPercentage >= 100 && this.isRepaired) {
@@ -425,12 +457,24 @@ class Player extends Phaser.GameObjects.Image {
             const body = this.barrel.body as Phaser.Physics.Arcade.Body
             body.setAngularVelocity(0)
             this.turretTurn.stop()
+            this.crosshair.setPosition(pointer.worldX, pointer.worldY)
         } else {
             const body = this.barrel.body as Phaser.Physics.Arcade.Body
             body.setAngularVelocity(Math.sign(angleDelta) * ROTATION_SPEED_DEGREES)
             if (!this.turretTurn.isPlaying) {
                 this.turretTurn.play({ loop: true })
             }
+            const distance = Phaser.Math.Distance.Between(
+                this.barrel.x,
+                this.barrel.y,
+                pointer.worldX,
+                pointer.worldY
+            )
+            const crosshairX =
+                this.barrel.x + Math.cos(this.barrel.rotation - Math.PI / 2) * distance
+            const crosshairY =
+                this.barrel.y + Math.sin(this.barrel.rotation - Math.PI / 2) * distance
+            this.crosshair.setPosition(crosshairX, crosshairY)
             // this.barrel.rotation += Math.sign(angleDelta) * ROTATION_SPEED
         }
     }
@@ -473,6 +517,55 @@ class Player extends Phaser.GameObjects.Image {
                 this.bullets.add(bullet)
 
                 this.lastShoot = this.scene.time.now + RELOAD_TIME
+            }
+        }
+    }
+
+    private handleMGShooting(): void {
+        if (this.mgShootingKey.isDown && this.scene.time.now > this.lastMGShoot) {
+            // this.scene.cameras.main.shake(20, 0.005)
+            if (!this.mgFireSound.isPlaying) this.mgFireSound.play({ loop: true })
+            if (!this.mgShellSound.isPlaying)
+                this.mgShellSound.play({ delay: 0.2, volume: 1, loop: true })
+            // this.reloadingPercentage = 0
+            // this.shellSound.play({ delay: 1, volume: 0.5 })
+            // this.reloadSound.play({ delay: 1.5, volume: 0.5 })
+            this.scene.tweens.add({
+                targets: this,
+                props: { alpha: 0.8 },
+                delay: 0,
+                duration: 5,
+                ease: 'Power1',
+                easeParams: null,
+                hold: 0,
+                repeat: 0,
+                repeatDelay: 0,
+                yoyo: true,
+                paused: false,
+            })
+
+            if (this.mgbullets.getLength() < 10) {
+                const bullet = new MGBullet({
+                    scene: this.scene,
+                    rotation: this.barrel.rotation,
+                    x: this.barrel.x,
+                    y: this.barrel.y,
+                    texture: 'bulletBlue',
+                })
+
+                bullet.setScale(2)
+                this.mgbullets.add(bullet)
+
+                this.lastMGShoot = this.scene.time.now + 100
+            }
+        } else if (this.scene.time.now > this.lastMGShoot) {
+            if (this.mgFireSound.isPlaying) {
+                this.mgFireSound.stop()
+                this.mgFireLastShotSound.play()
+            }
+            if (this.mgShellSound.isPlaying) {
+                this.mgShellSound.stop()
+                this.mgLastShellSound.play()
             }
         }
     }
