@@ -178,7 +178,7 @@ class Player extends Phaser.GameObjects.Image {
         this.mgbullets = this.scene.add.group({
             /*classType: Bullet,*/
             active: true,
-            maxSize: 10,
+            maxSize: 20,
             runChildUpdate: true,
         })
 
@@ -513,7 +513,7 @@ class Player extends Phaser.GameObjects.Image {
                     texture: 'bulletBlue',
                 })
 
-                bullet.setScale(2)
+                bullet.setScale(3)
                 this.bullets.add(bullet)
 
                 this.lastShoot = this.scene.time.now + RELOAD_TIME
@@ -544,7 +544,7 @@ class Player extends Phaser.GameObjects.Image {
                 paused: false,
             })
 
-            if (this.mgbullets.getLength() < 10) {
+            if (this.mgbullets.getLength() < 20) {
                 const bullet = new MGBullet({
                     scene: this.scene,
                     rotation: this.barrel.rotation,
@@ -553,7 +553,7 @@ class Player extends Phaser.GameObjects.Image {
                     texture: 'bulletBlue',
                 })
 
-                bullet.setScale(2)
+                bullet.setScale(1)
                 this.mgbullets.add(bullet)
 
                 this.lastMGShoot = this.scene.time.now + 100
