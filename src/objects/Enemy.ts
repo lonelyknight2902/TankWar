@@ -38,6 +38,7 @@ class Enemy extends Phaser.GameObjects.Image {
             blendMode: 'MULTIPLY',
             scale: { start: 0.5, end: 1 },
             speed: { min: 20, max: 40 },
+            alpha: { start: 0.5, end: 0 },
             quantity: 1,
             lifespan: 1000,
             gravityY: -50,
@@ -155,17 +156,15 @@ class Enemy extends Phaser.GameObjects.Image {
     }
 
     public updateHealth(damage = DAMAGE): void {
+        this.health -= damage
         if (this.health > 0) {
-            this.health -= damage
-            if (this.health < 0) {
-                this.health = 0
-            }
             this.redrawLifebar()
             if (this.health / this.maxHealth < 0.3) {
                 this.smokeEmitter.start()
             }
         } else {
             this.health = 0
+            this.redrawLifebar()
             this.active = false
             this.explodeSound.play()
             this.smokeEmitter.stop()

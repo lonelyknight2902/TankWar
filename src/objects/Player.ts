@@ -113,6 +113,7 @@ class Player extends Phaser.GameObjects.Image {
             blendMode: 'MULTIPLY',
             scale: { start: 0.5, end: 1 },
             speed: { min: 20, max: 40 },
+            alpha: { start: 0.5, end: 0 },
             quantity: 1,
             lifespan: 1000,
             gravityY: -50,
@@ -491,11 +492,7 @@ class Player extends Phaser.GameObjects.Image {
     }
 
     private handleShooting(): void {
-        if (
-            this.scene.input.activePointer.isDown &&
-            this.scene.time.now > this.lastShoot &&
-            !this.reloadSound.isPlaying
-        ) {
+        if (this.scene.input.activePointer.isDown && this.scene.time.now > this.lastShoot) {
             this.scene.cameras.main.shake(20, 0.005)
             this.fireSound.play()
             this.reloadingPercentage = 0
@@ -636,8 +633,8 @@ class Player extends Phaser.GameObjects.Image {
 
     public updateHealth(): void {
         this.damageSpeeches[Phaser.Math.RND.between(0, 3)].play()
+        this.health -= DAMAGE
         if (this.health > 0) {
-            this.health -= DAMAGE
             this.redrawLifebar()
             if (this.health / this.maxHealth < 0.3) {
                 this.smokeEmitter.start()
@@ -646,6 +643,7 @@ class Player extends Phaser.GameObjects.Image {
             }
         } else {
             this.health = 0
+            this.redrawLifebar()
             this.active = false
             // this.scene.scene.start('MenuScene')
         }
