@@ -125,6 +125,9 @@ class Enemy extends Phaser.GameObjects.Image {
                 ease: 'Power1',
                 yoyo: true,
                 repeat: 0,
+                onComplete: () => {
+                    this.muzzleFlash.setAlpha(0)
+                }
             })
             if (this.bullets.getLength() < 10) {
                 this.bullets.add(
